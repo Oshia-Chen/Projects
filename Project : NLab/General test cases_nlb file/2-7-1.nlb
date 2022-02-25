@@ -1,5 +1,0 @@
-BEGIN {
-   READ "3x5.arr" $A
-   SET $B := U-NOT ;
-   PRINT $B
-}

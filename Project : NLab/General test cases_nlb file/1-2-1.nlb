@@ -1,4 +1,0 @@
-BEGIN {
-   SET $A := 2 ;
-   PRINT $F
-}

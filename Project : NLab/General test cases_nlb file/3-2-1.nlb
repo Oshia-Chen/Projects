@@ -1,5 +1,0 @@
-BEGIN {
-   READ 2 $A
-   SET $B := B-AND ;
-   PRINT $B
-}
