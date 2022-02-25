@@ -172,7 +172,7 @@ void INSTRC(Program *p)
                if(!SWAP(p)){
                   if(!IF(p)){
 #endif
-                  ON_ERROR("Expected some instruction, e.g. PRINT/SET/CREATE/LOOP.\n");
+                  ON_ERROR("Expected some instruction, e.g. PRINT/SET/CREATE/LOOP/{ .\n");
 #ifdef EXTENSION
                   }
                }

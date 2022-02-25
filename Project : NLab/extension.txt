@@ -1,0 +1,332 @@
+
+My extension extends two new formal grammars: IF and SWAP. 
+I will describe below in terms of their syntax and operation.
+
+
+<IF>
+IF is a new formal grammar that does the same thing as if & else in C, allowing programs to be conditional and execute different code based on different conditions.
+
+The formal grammar of IF is: 
+
+"IF" <VARNAME> <INTEGER> <COMPARE> "{" <ELSEINSTRCLIST> | "IF" <VARNAME> <VARNAME> <COMPARE> "{" <ELSEINSTRCLIST>
+
+<COMPARE> ::= "B-LESS" | "B-EQUAL" | "B-GREATER"
+
+<ELSEINSTRCLIST> ::=  <INSTRCLIST> | <INSTRCLIST> <ELSE>
+
+<ELSE> ::= "ELSE" "{" <INSTRCLIST>
+
+
+Some use cases are below.
+
+
+1. Simple if (no else)
+
+BEGIN {
+   ONES 6 5 $A
+   SET $B := 3 ;
+   IF $B 3 B-EQUALS {
+     SET $A := $A 2 B-ADD ;
+     PRINT "ARRAY:"
+     PRINT $A
+   }
+}
+
+->The output should be :    
+							ARRAY:
+							3 3 3 3 3 
+							3 3 3 3 3 
+							3 3 3 3 3 
+							3 3 3 3 3 
+							3 3 3 3 3 
+							3 3 3 3 3 
+
+
+2. Simple if (with else)
+
+BEGIN {
+   ONES 6 5 $A
+   SET $B := 3 ;
+   IF $B 2 B-EQUALS {
+     SET $A := $A 2 B-ADD ;
+     PRINT "ARRAY:"
+     PRINT $A
+   }
+   ELSE {
+     SET $A := $A 3 B-ADD ;
+     PRINT "ARRAY:"
+     PRINT $A
+   }
+}
+
+->The output should be : 
+							ARRAY:
+							4 4 4 4 4 
+							4 4 4 4 4 
+							4 4 4 4 4 
+							4 4 4 4 4 
+							4 4 4 4 4 
+							4 4 4 4 4 
+
+
+3. Nested if (no else)
+
+BEGIN {
+   ONES 6 5 $A
+   SET $B := 3 ;
+   IF $B 3 B-EQUALS {
+     IF $B 2 B-EQUALS {
+       SET $A := $A 2 B-ADD ;
+       PRINT "ARRAY:"
+       PRINT $A
+     }
+   }
+}
+
+->The output should be :   (no output)
+
+
+
+4. Nested if (with else)
+
+BEGIN {
+   ONES 6 5 $A
+   SET $B := 3 ;
+   IF $B 3 B-EQUALS {
+     IF $B 2 B-EQUALS {
+       SET $A := $A 2 B-ADD ;
+       PRINT "ARRAY:"
+       PRINT $A
+     }
+   }
+   ELSE {
+     SET $A := $A 3 B-ADD ;
+     PRINT $A
+   }
+}
+
+->The output should be :   (no output)
+
+
+
+5. Loop with if (no else)
+
+BEGIN {
+   SET $B := 10 ;
+   LOOP $I 10 {
+      IF $B $I B-EQUALS {
+        SET $I := $I 2 B-ADD ; 
+        PRINT $I
+      }
+   }
+}
+
+->The output should be :  12
+
+
+6. Loop with if (with else)
+
+BEGIN {
+   SET $B := 10 ;
+   LOOP $I 10 {
+      IF $B $I B-EQUALS {
+        SET $I := $I 2 B-ADD ; 
+        PRINT $I
+      }
+      ELSE {
+      	PRINT $I
+      }
+   }
+}
+
+->The output should be :  
+							1
+							2
+							3
+							4
+							5
+							6
+							7
+							8
+							9
+							12
+
+
+7. If with loop (with else)
+
+Example 1 :
+
+BEGIN {
+   ONES 6 5 $A
+   SET $B := 3 ;
+   IF $B 3 B-EQUALS {
+     LOOP $I 2 {
+     SET $A := $A 2 B-ADD ;
+     PRINT "ARRAY:"
+     PRINT $A
+     }
+   }
+   ELSE{
+     PRINT "ARRAY:"
+     PRINT $A
+   }
+}
+
+->The output should be :  
+							ARRAY:
+							3 3 3 3 3 
+							3 3 3 3 3 
+							3 3 3 3 3 
+							3 3 3 3 3 
+							3 3 3 3 3 
+							3 3 3 3 3 
+
+							ARRAY:
+							5 5 5 5 5 
+							5 5 5 5 5 
+							5 5 5 5 5 
+							5 5 5 5 5 
+							5 5 5 5 5 
+							5 5 5 5 5 
+
+
+Example 2 :
+
+BEGIN {
+   ONES 6 5 $A
+   SET $B := 3 ;
+   IF $B 1 B-EQUALS {
+     LOOP $I 2 {
+     SET $A := $A 2 B-ADD ;
+     PRINT "ARRAY:"
+     PRINT $A
+     }
+   }
+   ELSE{
+     PRINT "ARRAY:"
+     PRINT $A
+   }
+}
+
+->The output should be : 
+							ARRAY:
+							1 1 1 1 1 
+							1 1 1 1 1 
+							1 1 1 1 1 
+							1 1 1 1 1 
+							1 1 1 1 1 
+							1 1 1 1 1
+
+
+8. If with two VARNAME (with else)
+
+BEGIN {
+   ONES 6 5 $A
+   SET $B := 3 ;
+   SET $C := 10 ;
+   IF $B $C B-LESS {
+     SET $A := $A 2 B-ADD ;
+     PRINT "ARRAY:"
+     PRINT $A
+   }
+}
+
+->The output should be : 
+							ARRAY:
+							3 3 3 3 3 
+							3 3 3 3 3 
+							3 3 3 3 3 
+							3 3 3 3 3 
+							3 3 3 3 3 
+							3 3 3 3 3 
+
+
+
+
+
+
+<SWAP>
+SWAP is a new formal grammar, which does the same thing as the swap function written in C before, swaps the values of two variables. But my SWAP can execute without a third temporary container by just switching their varname.
+
+The formal grammar of SWAP is: "SWAP" <VARNAME> <VARNAME>
+Some use cases are below.
+
+1. SWAP 2 integer
+
+BEGIN {
+   SET $A := 2 ;
+   SET $B := 10 ;
+   SWAP $A $B
+   PRINT $A
+   PRINT $B
+}
+
+->The output should be : 	10 
+							2
+
+
+
+2. SWAP 1 integer & 1 array
+
+BEGIN {
+   READ "lglider.arr" $A
+   SET $B := 100 ;
+   SWAP $A $B
+   PRINT $A
+   PRINT $B
+}
+
+->The output should be :    100
+							0 0 0 0 0 
+							0 0 0 0 0 
+							0 1 1 1 0 
+							0 0 0 0 0 
+							0 0 0 0 0 
+
+
+3. SWAP 2 array
+
+BEGIN {
+   READ "lglider.arr" $A
+   READ "3x3.arr" $B
+   SET $B := $B 8 B-TIMES ;
+   SWAP $A $B
+   PRINT $A
+   PRINT $B
+}
+
+->The output should be :    40 40 40 
+							40 40 40 
+							40 40 40 
+
+							0 0 0 0 0 
+							0 0 0 0 0 
+							0 1 1 1 0 
+							0 0 0 0 0 
+							0 0 0 0 0 
+
+
+4. Nested LOOP with SWAP
+BEGIN {
+   SET $A := 0 ;
+   LOOP $I 5 {
+      LOOP $J 5 {
+         SET $A := $I $J B-TIMES ;
+         SWAP $I $J
+         PRINT $A
+      }
+   }
+}
+
+->The output should be :    1
+							2
+							4
+							6
+							9
+							12
+							16
+							20
+							25
+
+
+
