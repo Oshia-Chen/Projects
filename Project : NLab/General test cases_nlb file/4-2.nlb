@@ -1,0 +1,10 @@
+BEGIN {
+   LOOP $I 5 {
+      LOOP $J 3 {
+   	 LOOP $K 2 {
+      	    SET $A := $I $J B-TIMES ; 
+      	    PRINT $A
+      	 }
+      }
+   }
+}

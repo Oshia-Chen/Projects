@@ -1,0 +1,4 @@
+BEGIN {
+   SET $AA := 1 ;
+   PRINT $A
+}

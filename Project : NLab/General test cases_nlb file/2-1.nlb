@@ -1,0 +1,15 @@
+BEGIN {
+   READ "3x3.arr" $A
+  SET $B := 5 ;
+  SET $C := $A $B B-EQUALS ;
+  SET $D := $A $B B-TIMES ;
+  SET $E := $A $B B-ADD ;
+  SET $B := 2 ;
+  SET $F := $A $B B-GREATER ;
+  SET $G := $A $B B-LESS ;
+  PRINT $C
+  PRINT $D
+  PRINT $E
+  PRINT $F
+  PRINT $G
+}
