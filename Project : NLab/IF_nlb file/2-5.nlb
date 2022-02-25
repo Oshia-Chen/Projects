@@ -1,0 +1,5 @@
+BEGIN {
+   READ "3x5.arr" $A
+   SET $B := $A B-AND ;
+   PRINT $B
+}

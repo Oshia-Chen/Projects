@@ -1,0 +1,4 @@
+BEGIN {
+   SET $A := 2.2 ;
+   PRINT $A
+}

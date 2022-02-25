@@ -1,0 +1,5 @@
+BEGIN {
+   READ "empty.arr" $A
+   SET $B := B-AND ;
+   PRINT $B
+}
