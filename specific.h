@@ -1,15 +1,23 @@
 #include "../dict.h"
-#define KHASHES 11
-#define BERNSTEIN_NUM 5381
-#define MAXIMUM 20
+#define Longest 2000
+#define MAXIMUM 2
 
 struct dict{
    int length;
-   bool flag;
+   struct dict_node* p;
 };
 
-unsigned long* _hashes(const char* s);
-unsigned long _hash(const char* s);
 
+struct dict_node{
+   struct item* next;
+};
+typedef struct dict_node dict_node;
+
+
+struct item{
+   char str[Longest];
+   struct item* next;
+};
+typedef struct item item;
 
 

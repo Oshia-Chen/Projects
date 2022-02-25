@@ -1,0 +1,15 @@
+CFLAGS := -Wall -Wextra -Wpedantic -Wfloat-equal -Wvla -std=c99 -Werror -O2
+
+SANITIZE := $(CWARNS) -ASAN_OPTIONS=detect_leaks=1 -fsanitize=address -fsanitize=undefined -g3
+
+# You need to provide Exact/exact.c and Exact/specific.h
+# All other files are mine including the general.c/.h files which
+# are copied from ADTS/General
+
+all: testapprox spellapprox
+
+testapprox: Approx/approx.c testdict.c general.c
+	clang testdict.c Approx/approx.c general.c $(CFLAGS) -o testapprox -lm
+
+spellapprox: Approx/approx.c spelling.c general.c
+	clang spelling.c Approx/approx.c general.c $(CFLAGS) -o spellapprox -lm
