@@ -1,4 +1,4 @@
-Hi Neill, my testing file contains the following sections:
+Hi, my testing file contains the following sections:
 <Simple Assertion> / <Edge Case Testing> / <General Case Testing>.
 They each cover different details of the testing that I find important. Thank you in advance for reading!
 
