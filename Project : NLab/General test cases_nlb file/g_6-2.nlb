@@ -1,0 +1,9 @@
+BEGIN {
+   SET $A := 0 ;
+   LOOP $I 8 {
+      LOOP $J 2 {
+         SET $A := $I $J B-TIMES ;
+         PRINT $A
+      }
+   }
+}

@@ -1,0 +1,14 @@
+BEGIN {
+   READ "lglider.arr" $A
+   SET $B := $A 2 B-TIMES ;
+   SET $C := $A $B B-TIMES ;
+   PRINT $C
+   SET $D := $C $B B-ADD ;
+   PRINT $D
+   SET $E := $D 1 B-GREATER ;
+   PRINT $E
+   SET $F := $E 2 B-LESS ;
+   PRINT $F
+   SET $G := $F 0 B-EQUALS ;
+   PRINT $G
+}

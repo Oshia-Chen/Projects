@@ -1,0 +1,6 @@
+BEGIN {
+	READ "lglider.arr" $A
+   SET $B := $A U-EIGHTCOUNT ;
+   PRINT $B
+ }
+ 

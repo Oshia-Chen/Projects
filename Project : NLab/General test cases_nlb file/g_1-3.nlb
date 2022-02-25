@@ -1,0 +1,4 @@
+BEGIN {
+	SET $Z := 2 ;
+   PRINT $A
+}

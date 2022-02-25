@@ -1,0 +1,16 @@
+BEGIN {
+	SET $A := 5 3 B-TIMES ;
+	PRINT $A
+   SET $B := $A 10 B-TIMES ;
+   PRINT $B
+   SET $C := $B 151 B-GREATER ;
+   PRINT $C
+   SET $D := $C 7 B-ADD ;
+   PRINT $D
+   SET $E := $D 10 B-LESS ;
+   PRINT $E
+   SET $F := $E 1 B-EQUALS ;
+   PRINT $F
+   SET $G := $F 0 B-AND ;
+   PRINT $G
+}

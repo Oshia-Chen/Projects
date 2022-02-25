@@ -1,0 +1,6 @@
+BEGIN {
+
+   READ "lglider.arr" $A
+   SET $B := $A U-NOT ;
+   PRINT $B
+}

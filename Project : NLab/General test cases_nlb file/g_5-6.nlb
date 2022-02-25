@@ -1,0 +1,5 @@
+BEGIN {
+   READ "empty.arr" $A
+   PRINT "ARRAY:"
+   PRINT $A
+}

@@ -1,0 +1,13 @@
+BEGIN {
+   READ "lglider.arr" $A
+   SET $B := $A 0 B-OR ;
+   PRINT $B
+   SET $C := $B 2 B-TIMES ;
+   PRINT $C
+   SET $D := $C 2 B-EQUALS ;
+   PRINT $D
+   SET $E := $D 10 B-ADD ;
+   PRINT $E
+   SET $F := $E 1 B-AND ;
+   PRINT $F
+}

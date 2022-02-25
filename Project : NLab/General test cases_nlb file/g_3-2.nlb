@@ -1,0 +1,5 @@
+BEGIN {
+   SET $A := 1 ;
+   SET $B := $A U-NOT ;
+   PRINT $B
+}

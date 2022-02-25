@@ -1,0 +1,5 @@
+BEGIN {
+	SET $Z := 10023 ;
+	SET $A := $Z 3 B-TIMES ;
+   PRINT $A
+}
