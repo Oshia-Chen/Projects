@@ -1,0 +1,8 @@
+BEGIN {
+   READ "lglider.arr" $A
+   READ "3x3.arr" $B
+   SET $B := $B 8 B-TIMES ;
+   SWAP $A $B
+   PRINT $A
+   PRINT $B
+}

@@ -1,0 +1,7 @@
+BEGIN {
+   SET $A := 2 ;
+   SET $B := 10 ;
+   SWAP $A $B
+   PRINT $A
+   PRINT $B
+}
