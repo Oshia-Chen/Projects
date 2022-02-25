@@ -1,0 +1,1032 @@
+Hi Neill, my testing file contains the following sections:
+<Simple Assertion> / <Edge Case Testing> / <General Case Testing>.
+They each cover different details of the testing that I find important. Thank you in advance for reading!
+
+
+<Simple Assertion>
+
+In the case of the assert functions, the IS_INTEGER & TO_INTEGER functions are more testable.
+So I did some unit tests on them in the TEST() function:
+
+char* a = "26756";
+assert(IS_INTEGER(a));
+assert(TO_INTEGER(a) == 26756);
+
+char* b = "*6756";
+assert(!IS_INTEGER(b));
+
+char* c = "3-756";
+assert(!IS_INTEGER(c));
+
+char* d = "90001";
+assert(IS_INTEGER(d));
+assert(TO_INTEGER(d) == 90001);
+
+
+*Other functions testing will be covered in the following sections.
+
+
+
+<Edge Cases Testing>
+
+(All .arr file can be found in the "array.arr" folder.)
+
+
+(1) VARNAME & Variable test cases
+
+1. The first two words of the variable name are valid, but they should be invalid if the length is greater than 2.
+	For example:
+
+	BEGIN {
+	   SET $AA := 1 ;
+	   PRINT $A
+	}
+
+	The output should be: "Expected a vaild varname, e.g. $A, $B, $Z."
+
+
+2. The variable name is valid, but the variable should be invalid if it hasn't defined the value before operating.
+   Example 1:
+
+	BEGIN {
+	   SET $A := 2 ;
+	   PRINT $F
+	}
+
+	->The output should be: "Cannot print an undefined variable."
+
+
+   Example 2:
+
+	BEGIN {
+	   SET $A := $F U-NOT ;
+	   PRINT $A
+	}
+
+	->The output should be: "Using an undefined variable!"
+
+
+3. The same variable can be assigned a different type of value. For instance, $A was an integer but became a 2D array after redefining.
+	For example:
+
+	BEGIN {
+	   READ "lglider.arr" $A
+	   PRINT $A
+	   SET $A := 2 ;
+	   PRINT $A
+	}
+
+	->The output should be :
+                                0 0 0 0 0
+                                0 0 0 0 0
+                                0 1 1 1 0
+                                0 0 0 0 0
+                                0 0 0 0 0
+
+                                2
+
+
+
+
+(2) Operator test cases
+
+
+1. Two variable with different data type should be able to do operate together.
+	For example, an integer & an array:
+
+	BEGIN {
+        READ "3x3.arr" $A
+        SET $B := 5 ;
+        SET $C := $A $B B-EQUALS ;
+        SET $D := $A $B B-TIMES ;
+        SET $E := $A $B B-ADD ;
+        SET $B := 2 ;
+        SET $F := $A $B B-GREATER ;
+        SET $G := $A $B B-LESS ;
+        PRINT $C
+        PRINT $D
+        PRINT $E
+        PRINT $F
+        PRINT $G
+	}
+
+	->The output should be :
+                                1 1 1
+                                1 1 1
+                                1 1 1
+
+                                25 25 25
+                                25 25 25
+                                25 25 25
+
+                                10 10 10
+                                10 10 10
+                                10 10 10
+
+                                1 1 1
+                                1 1 1
+                                1 1 1
+
+                                0 0 0
+                                0 0 0
+                                0 0 0
+
+
+2. If the array contains the value greater than 1, the result should apply the concept of Boolean while doing UNARYOP and BINARYOP.
+	Example 1:
+
+	BEGIN {
+	   READ "3x3.arr" $A
+	   SET $B := $A 1 B-AND ;
+	   PRINT $B
+	}  
+	
+	->The output should be :
+                                1 1 1
+                                1 1 1
+                                1 1 1
+
+
+	Example 2:
+
+	BEGIN {
+	   READ "3x3.arr" $A
+	   SET $B := $A 0 B-AND ;
+	   PRINT $B
+	}  
+	
+	->The output should be :
+                                0 0 0
+                                0 0 0
+                                0 0 0
+
+
+	Example 3:
+
+	BEGIN {
+	   READ "3x3.arr" $A
+	   SET $B := $A 0 B-OR ;
+	   PRINT $B
+	}  
+	
+	->The output should be :
+                                1 1 1
+                                1 1 1
+                                1 1 1
+
+
+	Example 4:
+
+	BEGIN {
+	   READ "3x3.arr" $A
+	   SET $B := $A U-NOT ;
+	   PRINT $B
+	}  
+	
+	->The output should be :
+                                0 0 0
+                                0 0 0
+                                0 0 0
+
+
+3. Two arrays with different lengths but both greater than one should not be able to do operate together.
+	For example:
+
+	BEGIN {
+	   READ "3x3.arr" $A
+	   READ "3x5.arr" $B
+	   SET $C := $A $B B-AND ;
+	   PRINT $C
+	} 
+
+   ->The output should be : "Expected two arrays of the same length, including the rows & cols."
+
+
+4. Two array with the same length but different rows and cols should not be able to do operate together.
+	For example:
+	
+	BEGIN {
+	   READ "3x5.arr" $A
+	   READ "5x3.arr" $B
+	   SET $C := $A $B B-AND ;
+	   PRINT $C
+	} 
+
+   ->The output should be : "Expected two arrays of the same length, including the rows & cols."
+
+
+5. While doing BINARYOP but only has one variable, it should not be able to do operate.
+	For example:
+
+	BEGIN {
+	   READ "3x5.arr" $A
+	   SET $B := $A B-AND ;
+	   PRINT $B
+	}
+
+   ->The output should be : "Expected two variables or integers before doing BINARYOP."
+
+
+6. If there are any remaining PUSHDOWN after the operation, the result will not be able to be assigned to the variable.
+	For example:
+
+	BEGIN {
+	   READ "3x5.arr" $A
+	   SET $B := $A 2 U-NOT ;
+	   PRINT $B
+	}
+
+   ->The output should be : "Cannot assign more than one value to a variable."
+
+
+7. If there is no PUSHDOWN before BINARYOP or UNARYOP, it should not be able to do operate.
+	Example 1:
+
+	BEGIN {
+	   READ "3x5.arr" $A
+	   SET $B := U-NOT ;
+	   PRINT $B
+	}
+
+   ->The output should be : "Expected a variable or an integer before doing UNARYOP."
+
+
+	Example 2:
+
+	BEGIN {
+	   READ "3x5.arr" $A
+	   SET $B := B-AND ;
+	   PRINT $B
+	}
+
+   ->The output should be : "Expected two variables or integers before doing BINARYOP."
+
+
+
+(3) File reading test cases
+
+1. ".nlb" file reading
+
+	1.1 If the user doesn't provide a file name in the command line and only types ./inter, the program will be halted.
+
+	    ->The output should be : "Usage : ./interp <program.nlb> or ./interp <program.arr>"
+
+
+	1.2 If the file doesn't exist, the program will be halted.
+
+	    ->The output should be : "Cannot read "file name""
+
+
+	1.3 If the file doesn't contain "BEGIN", the error message will be shown.
+
+	    ->The output should be : "No BEGIN statement?"
+
+
+
+2. ".arr" file reading
+
+	2.1 If the user doesn't provide a file name in the .nlb file after "READ", the program will be halted.
+	    For example:
+
+			BEGIN {
+			   READ 2 $A
+			   SET $B := B-AND ;
+			   PRINT $B
+			}
+
+	    ->The output should be : "Expected a file name with double quote after READ."
+
+
+	2.2 If the file name contains space, it is an invalid format.
+	    For example:
+
+			BEGIN {
+			   READ "3x5 .arr" $A
+			   SET $B := B-AND ;
+			   PRINT $B
+			}
+
+	    ->The output should be : "Expected a double quote at the end of the string or file name."
+
+
+	2.3 If the file name doesn't end with a double quote, it is an invalid format.
+	    For example:
+
+			BEGIN {
+			   READ "3x5.arr $A
+			   SET $B := B-AND ;
+			   PRINT $B
+			}
+
+	    ->The output should be : "Expected a double quote at the end of the string or file name."
+
+
+	2.4 If the file doesn't exist, the program will be halted.
+	    For example:
+
+			BEGIN {
+			   READ "empty.arr" $A
+			   SET $B := B-AND ;
+			   PRINT $B
+			}
+
+	    ->The output should be : "Cannot read empty.arr"
+
+
+	2.5 If the rows & cols in the file are not integers, it is an invalid array file.
+	    For example, if the array file contains:
+                                                    A 3
+                                                    5 5 5
+                                                    5 5 5
+                                                    5 5 5
+	    
+	    ->The output should be : "Expected rows and cols are defined as integers in the array file."
+
+
+	2.6 The file contains content that is not an integer, it is an invalid array file.
+	    For example, if the array file contains:
+                                                    3 3
+                                                    * 5 5
+                                                    5 5 5
+                                                    5 5 5
+	    
+	    ->The output should be : "Expected the array file only contains integer."
+
+
+
+(4) Loop test cases
+
+1. If the value of $I was changed in the loop, then the next loop should get the new value of $I. 
+	For example:
+
+	BEGIN {
+	   LOOP $I 10 {
+	      SET $I := $I 1 B-ADD ; 
+	      PRINT $I
+	   }
+	}
+
+	->The output should be : 
+				2 
+				4 
+				6 
+				8 
+				10
+
+
+2. The nested loop over two levels should be able to operate successfully.
+	For example:
+
+	BEGIN {
+	   LOOP $I 5 {
+	   	LOOP $J 3 {
+	   		LOOP $K 2 {
+	      		SET $A := $I $J B-TIMES ; 
+	      		PRINT $A
+	      	}
+	      }
+	   }
+	}
+
+	->The output should be : 1 1 2 2 3 3 2 2 4 4 6 6 3 3 6 6 9 9 4 4 8 8 12 12 5 5 10 10 15 15
+
+
+3. Loop over one time should be able to operate successfully.
+	For example:
+
+	BEGIN {
+		SET $P := 5 ;
+
+		PRINT "1:"
+		LOOP $L 10 {
+		    SET $K := $P 5 B-ADD 2 B-TIMES ;
+		    PRINT $K
+		}
+
+		PRINT "2:"
+		LOOP $J 5 {
+		    SET $K := $P 5 B-TIMES 150 B-LESS ;
+		    PRINT $K
+        }
+	}
+
+
+	->The output should be :
+                                1:
+                                20
+                                20
+                                20
+                                20
+                                20
+                                20
+                                20
+                                20
+                                20
+                                20
+                                2:
+                                1
+                                1
+                                1
+                                1
+                                1
+
+
+
+(5) Integer test cases
+
+1. If the integer is negative, the error message will be shown.
+	For example:
+
+	BEGIN {
+	   SET $A := -2 ;
+	   PRINT $A
+	}
+	
+   ->The output should be : "Expected a non-negative integer."
+
+
+2. The INTEGER should be defined by a valid format, or the error message will be shown.
+	For example:
+
+	BEGIN {
+	   SET $A := 2.2 ;
+	   PRINT $A
+	}
+	
+   ->The output should be : "Expected a POLISHLIST."
+
+
+
+
+
+<General test cases>
+
+(1) Set & Print
+
+1. Set and print an integer variable
+	For example:
+
+	BEGIN {
+	   SET $Z := 12 ;
+	   PRINT $Z
+	}
+
+	->The output should be : 12
+
+
+2. Set and print an array variable
+	For example:
+
+	BEGIN {
+        ONES 6 5 $A
+        SET $Z := ＄A ;
+        PRINT "ARRAY:"
+        PRINT $Z
+	}
+
+	->The output should be :
+                                ARRAY:
+                                1 1 1 1 1
+                                1 1 1 1 1
+                                1 1 1 1 1
+                                1 1 1 1 1
+                                1 1 1 1 1
+                                1 1 1 1 1
+
+
+3. Print an undefined variable
+	For example:
+
+	BEGIN {
+		SET $Z := 2 ;
+        PRINT $A
+	}
+
+	->The output should be : "Cannot print an undefined variable."
+
+
+4. Set an undefined variable
+	For example:
+
+	BEGIN {
+		SET $Z := $B ;
+        PRINT $Z
+	}
+
+	->The output should be : "Using an undefined variable!"
+
+
+5. Set more than one value to a variable
+	For example:
+
+	BEGIN {
+		SET $A := 10 ;
+		SET $B := $A 2 U-NOT ;
+	   	PRINT $B
+	}
+
+	->The output should be : "Cannot assign more than one value to a variable."
+
+
+6. Set an invalid variable name
+	For example:
+
+	BEGIN {
+		SET # := 10 ;
+	   	PRINT #
+	}
+
+	->The output should be : "Expected a VARNAME."
+
+
+7. Print an invalid variable name
+	For example:
+
+	BEGIN {
+		SET $A := 10 ;
+        PRINT #
+	}
+
+	->The output should be : "Expected a varname or string after PRINT."
+
+
+
+(2) Integer
+
+1. Use negative integer
+	For example:
+
+	BEGIN {
+		SET $A := -2 ;
+        PRINT $A
+	}
+
+	->The output should be : "Expected a non-negative integer."
+
+
+
+2. From char to integer (TO_INTEGER function)
+	For example:
+
+	BEGIN {
+		SET $Z := 10023 ;
+		SET $A := $Z 3 B-TIMES ;
+        PRINT $A
+	}
+
+	->The output should be : 30069
+
+
+
+(3) UNARYOP 
+
+1. U-NOT an array
+	For example:
+
+	BEGIN {
+	   READ "lglider.arr" $A
+	   SET $B := $A U-NOT ;
+	   PRINT $B
+	}
+
+	->The output should be :
+                                1 1 1 1 1
+                                1 1 1 1 1
+                                1 0 0 0 1
+                                1 1 1 1 1
+                                1 1 1 1 1
+
+
+2. U-NOT an integer
+	For example:
+
+	BEGIN {
+	   SET $A := 1 ;
+	   SET $B := $A U-NOT ;
+	   PRINT $B
+	}
+
+	->The output should be : 0
+
+
+3. U-EIGHTCOUNT an array
+	For example:
+
+	BEGIN {
+		READ "lglider.arr" $A
+        SET $B := $A U-EIGHTCOUNT ;
+        PRINT $B
+	 }
+
+	->The output should be :    0 0 0 0 0
+                                1 2 3 2 1
+                                1 1 2 1 1
+                                1 2 3 2 1
+                                0 0 0 0 0
+
+
+4. U-EIGHTCOUNT an integer
+	For example:
+
+	BEGIN {
+	   SET $A := 1 ;
+	   SET $B := $A U-EIGHTCOUNT ;
+	   PRINT $B
+	}
+
+	->The output should be : 0
+
+
+
+5. If missing a PUSHDOWN
+	For example:
+
+	BEGIN {
+	   SET $A := 1 ;
+	   SET $B :=  U-EIGHTCOUNT ;
+	   PRINT $B
+	}
+
+	->The output should be : "Expected a variable or an integer before doing UNARYOP."
+
+
+6. If there is a remaining PUSHDOWN
+	For example:
+
+	BEGIN {
+	   SET $A := 1 ;
+	   SET $B := 2 $A U-EIGHTCOUNT ;
+	   PRINT $B
+	}
+
+	->The output should be : "Cannot assign more than one value to a variable."
+
+
+
+(4) BINARYOP
+
+1. Operate array & integer
+	For example:
+
+	BEGIN {
+	   READ "lglider.arr" $A
+	   SET $B := $A 0 B-OR ;
+	   PRINT $B
+	   SET $C := $B 2 B-TIMES ;
+	   PRINT $C
+	   SET $D := $C 2 B-EQUALS ;
+	   PRINT $D
+	   SET $E := $D 10 B-ADD ;
+	   PRINT $E
+	   SET $F := $E 1 B-AND ;
+	   PRINT $F
+	}
+
+	->The output should be :
+                                0 0 0 0 0
+                                0 0 0 0 0
+                                0 1 1 1 0
+                                0 0 0 0 0
+                                0 0 0 0 0
+
+                                0 0 0 0 0
+                                0 0 0 0 0
+                                0 2 2 2 0
+                                0 0 0 0 0
+                                0 0 0 0 0
+
+                                0 0 0 0 0
+                                0 0 0 0 0
+                                0 1 1 1 0
+                                0 0 0 0 0
+                                0 0 0 0 0
+
+                                10 10 10 10 10
+                                10 10 10 10 10
+                                10 11 11 11 10
+                                10 10 10 10 10
+                                10 10 10 10 10
+
+                                1 1 1 1 1
+                                1 1 1 1 1
+                                1 1 1 1 1
+                                1 1 1 1 1
+                                1 1 1 1 1
+
+
+2. Operate array & array
+	For example:
+
+	BEGIN {
+	   READ "lglider.arr" $A
+	   SET $B := $A 2 B-TIMES ;
+	   SET $C := $A $B B-TIMES ;
+	   PRINT $C
+	   SET $D := $C $B B-ADD ;
+	   PRINT $D
+	   SET $E := $D 1 B-GREATER ;
+	   PRINT $E
+	   SET $F := $E 2 B-LESS ;
+	   PRINT $F
+	   SET $G := $F 0 B-EQUALS ;
+	   PRINT $G
+	}
+
+	->The output should be :
+                                0 0 0 0 0
+                                0 0 0 0 0
+                                0 2 2 2 0
+                                0 0 0 0 0
+                                0 0 0 0 0
+
+                                0 0 0 0 0
+                                0 0 0 0 0
+                                0 4 4 4 0
+                                0 0 0 0 0
+                                0 0 0 0 0
+
+                                0 0 0 0 0
+                                0 0 0 0 0
+                                0 1 1 1 0
+                                0 0 0 0 0
+                                0 0 0 0 0
+
+                                1 1 1 1 1
+                                1 1 1 1 1
+                                1 1 1 1 1
+                                1 1 1 1 1
+                                1 1 1 1 1
+
+                                0 0 0 0 0
+                                0 0 0 0 0
+                                0 0 0 0 0
+                                0 0 0 0 0
+                                0 0 0 0 0
+
+
+3. Operate integer & integer
+	For example:
+
+	BEGIN {
+		SET $A := 5 3 B-TIMES ;
+        PRINT $A
+        SET $B := $A 10 B-TIMES ;
+        PRINT $B
+        SET $C := $B 151 B-GREATER ;
+        PRINT $C
+        SET $D := $C 7 B-ADD ;
+        PRINT $D
+        SET $E := $D 10 B-LESS ;
+        PRINT $E
+        SET $F := $E 1 B-EQUALS ;
+        PRINT $F
+        SET $G := $F 0 B-AND ;
+        PRINT $G
+	}
+
+	->The output should be :
+                                15
+                                150
+                                0
+                                7
+                                1
+                                1
+                                0
+
+
+4. If missing a PUSHDOWN
+	For example:
+
+	BEGIN {
+		SET $A := 5 3 B-TIMES ;
+        SET $B := $A B-TIMES ;
+        PRINT $B
+	}
+
+	->The output should be : "Expected two variables or integers before doing BINARYOP."
+
+
+5. If missing two PUSHDOWN
+	For example:
+
+	BEGIN {
+		SET $A := B-TIMES ;
+        PRINT $A
+	}
+
+	->The output should be : "Expected two variables or integers before doing BINARYOP."
+
+
+6. If there is a remaining PUSHDOWN
+	For example:
+
+	BEGIN {
+		SET $A := 2 ;
+		SET $B := 4 $A 2 B-TIMES ;
+        PRINT $B
+	}
+
+	->The output should be : "Cannot assign more than one value to a variable."
+
+
+
+(5) CREATE
+
+1. Use ONES & READ 
+    For example:
+
+    BEGIN {
+       ONES 6 5 $A
+       PRINT "ARRAY:"
+       PRINT $A
+       READ "lglider.arr" $A
+       PRINT "ARRAY:"
+       PRINT $A
+    }
+
+    ->The output should be :
+                                ARRAY:
+                                1 1 1 1 1
+                                1 1 1 1 1
+                                1 1 1 1 1
+                                1 1 1 1 1
+                                1 1 1 1 1
+                                1 1 1 1 1
+
+                                ARRAY:
+                                0 0 0 0 0
+                                0 0 0 0 0
+                                0 1 1 1 0
+                                0 0 0 0 0
+                                0 0 0 0 0
+
+
+2. Use ONES without a valid ROWS or COLS
+    For example:
+
+    BEGIN {
+       ONES 6 i $A
+       PRINT "ARRAY:"
+       PRINT $A
+    }
+
+    ->The output should be : "Expected a COLS after ONES."
+
+
+3. Use ONES without a valid VARNAME
+    For example:
+
+    BEGIN {
+       ONES 6 3 $a
+       PRINT "ARRAY:"
+       PRINT $A
+    }
+
+    ->The output should be : "The vaild varname should be upper-case letters, e.g. $A, $B, $Z."
+
+
+4. Use READ without a FILENAME
+    For example:
+
+    BEGIN {
+       READ $A
+       PRINT "ARRAY:"
+       PRINT $A
+    }
+
+    ->The output should be : "Expected a file name with double quote after READ."
+
+
+5. Use READ without a valid FILENAME
+    For example:
+
+    BEGIN {
+       READ "a .arr" $A
+       PRINT "ARRAY:"
+       PRINT $A
+    }
+
+    ->The output should be : "Expected a double quote at the end of the string or file name."
+
+
+6. Use READ without a valid file
+    For example:
+
+    BEGIN {
+       READ "empty.arr" $A
+       PRINT "ARRAY:"
+       PRINT $A
+    }
+
+    ->The output should be : "Cannot read empty.arr"
+
+
+
+(6) LOOP
+
+1. One level loop
+    For example:
+
+    BEGIN {
+       SET $F := 1 ;
+       LOOP $I 10 {
+          SET $F := $F $I B-TIMES ;
+          PRINT $F
+       }
+    }
+
+    ->The output should be :
+                                1
+                                2
+                                6
+                                24
+                                120
+                                720
+                                5040
+                                40320
+                                362880
+                                3628800
+
+
+2. Nested loop
+    For example:
+
+    BEGIN {
+       SET $A := 0 ;
+       LOOP $I 8 {
+          LOOP $J 2 {
+             SET $A := $I $J B-TIMES ;
+             PRINT $A
+          }
+       }
+    }
+
+    ->The output should be :
+                                1
+                                2
+                                2
+                                4
+                                3
+                                6
+                                4
+                                8
+                                5
+                                10
+                                6
+                                12
+                                7
+                                14
+                                8
+                                16
+
+
+3. Loop without <VARNAME>
+    For example:
+
+    BEGIN {
+       SET $F := 1 ;
+       LOOP 10 {
+          SET $F := $F $I B-TIMES ;
+          PRINT $F
+       }
+    }
+
+    ->The output should be : "LOOP : Expected a VARNAME."
+
+
+4. Loop without INTEGER
+    For example:
+
+    BEGIN {
+       SET $F := 1 ;
+       LOOP $I {
+          SET $F := $F $I B-TIMES ;
+          PRINT $F
+    }
+
+    ->The output should be : "LOOP : Expected an INTEGER."
+
+
+5. Loop without INSTRCLIST
+    For example:
+
+    BEGIN {
+       SET $F := 1 ;
+       LOOP $I 10 {
+          SET $F := $F $I B-TIMES ;
+          PRINT $F
+    }
+
+    ->The output should be :
+                                1
+                                2
+                                6
+                                24
+                                120
+                                720
+                                5040
+                                40320
+                                362880
+                                3628800
+                                Fatal Error: "Expected some instruction, e.g. PRINT/SET/CREATE/LOOP."
+
