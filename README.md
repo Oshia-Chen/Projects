@@ -1,1 +1,1 @@
-# University assignments
+University assignments
