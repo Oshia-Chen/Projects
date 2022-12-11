@@ -138,11 +138,11 @@ void Prog(Program *p)
    if(!strsame(p->wds[p->cw], "BEGIN")){ 
       ON_ERROR("No BEGIN statement?");
    }
-   p->cw = p->cw + 1; 
+   p->cw++; 
    if(!strsame(p->wds[p->cw], "{")){ 
       ON_ERROR("Expected a '{' ?\n");
    }
-   p->cw = p->cw + 1; 
+   p->cw++; 
    INSTRCLIST(p);
    return;
 }
@@ -154,7 +154,7 @@ void INSTRCLIST(Program *p)
       return;
    }
    INSTRC(p);
-   p->cw = p->cw + 1; 
+   p->cw++; 
    INSTRCLIST(p);
    return;
 
@@ -188,7 +188,7 @@ void INSTRC(Program *p)
 int PRINT(Program *p)
 {
    if(strsame(p->wds[p->cw], "PRINT")){ 
-      p->cw = p->cw + 1;
+      p->cw++;
       if(VARNAME(p)){
 #ifdef LETSDOIT
          PRINT_VAR(p);
@@ -252,18 +252,18 @@ int SET(Program *p)
    if(!strsame(p->wds[p->cw], "SET")){ 
      return 0;
    }
-   p->cw = p->cw + 1;
+   p->cw++;
    if(!VARNAME(p)){
       ON_ERROR("Expected a VARNAME.\n");
    }
 #ifdef LETSDOIT
    char tmp = p->wds[p->cw][1];
 #endif
-   p->cw = p->cw + 1;
+   p->cw++;
    if(!strsame(p->wds[p->cw], ":=")){ 
       ON_ERROR("Expected a ':='.\n");
    }
-   p->cw = p->cw + 1;
+   p->cw++;
    if(!POLISHLIST(p)){
       ON_ERROR("Expected a POLISHLIST.\n");
    }
@@ -302,7 +302,7 @@ int LOOP(Program *p)
    if(!strsame(p->wds[p->cw], "LOOP")){ 
      return 0;
    }
-   p->cw = p->cw + 1;
+   p->cw++;
    if(!VARNAME(p)){
       ON_ERROR("LOOP : Expected a VARNAME.\n");
    }
@@ -318,18 +318,18 @@ int LOOP(Program *p)
    }
    int loop_cnt = 1;
 #endif
-   p->cw = p->cw + 1;
+   p->cw++;
    if(!IS_INTEGER(p->wds[p->cw])){
       ON_ERROR("LOOP : Expected an INTEGER.\n");
    }
 #ifdef LETSDOIT
    int cap = TO_INTEGER(p->wds[p->cw]);
 #endif
-   p->cw = p->cw + 1;
+   p->cw++;
    if(!strsame(p->wds[p->cw], "{")){ 
       ON_ERROR("LOOP : Expected a '{'.\n");
    } 
-   p->cw = p->cw + 1;
+   p->cw++;
 #ifdef LETSDOIT
    LOOP_EXECUTE(p, vname, loop_cnt, cap);
 #endif
@@ -412,7 +412,7 @@ int POLISHLIST(Program *p)
       return 1;
    }
    if(POLISH(p)){
-      p->cw = p->cw + 1;
+      p->cw++;
       return POLISHLIST(p);
    }
    return 0;
@@ -837,17 +837,17 @@ void B_EQUALS_EXECUTE(Program *p, int sp, int rows, int cols)
 int CREATE(Program *p)
 {
    if(strsame(p->wds[p->cw], "ONES")){
-      p->cw = p->cw + 1;
+      p->cw++;
       ROWS(p);
 #ifdef LETSDOIT
       int rows = TO_INTEGER(p->wds[p->cw]);
 #endif
-      p->cw = p->cw + 1;
+      p->cw++;
       COLS(p);
 #ifdef LETSDOIT
       int cols = TO_INTEGER(p->wds[p->cw]);
 #endif
-      p->cw = p->cw + 1;
+      p->cw++;
       VARNAME(p); 
 #ifdef LETSDOIT
       ONES_EXECUTE(p, rows, cols);
@@ -856,9 +856,9 @@ int CREATE(Program *p)
    }
  
    if(strsame(p->wds[p->cw], "READ")){ 
-      p->cw = p->cw + 1;
+      p->cw++;
       FILENAME(p);
-      p->cw = p->cw + 1;
+      p->cw++;
       VARNAME(p);
 #ifdef LETSDOIT
       READ_EXECUTE(p);
@@ -985,11 +985,11 @@ int SWAP(Program *p)
    if(!strsame(p->wds[p->cw], "SWAP")){ 
      return 0;
    }
-   p->cw = p->cw + 1;
+   p->cw++;
    if(!VARNAME(p)){
       ON_ERROR("Expected two VARNAME after SWAP.\n");
    }
-   p->cw = p->cw + 1;
+   p->cw++;
    if(!VARNAME(p)){
       ON_ERROR("Expected two VARNAME after SWAP.\n");
    } 
@@ -1041,7 +1041,7 @@ int IF(Program *p)
    if(!strsame(p->wds[p->cw], "IF")){ 
      return 0;
    }
-   p->cw = p->cw + 1;
+   p->cw++;
    if(!VARNAME(p)){
       ON_ERROR("Expected at least a VARNAME after IF.\n");
    }
@@ -1049,7 +1049,7 @@ int IF(Program *p)
    if(p->exe[p->size_e-1].col > 1 || p->exe[p->size_e-1].row > 1){
       ON_ERROR("VARNAME should only contain integer in IF condition.\n");
    }
-   p->cw = p->cw + 1;
+   p->cw++;
    if(VARNAME(p)){
       GET_VAR_VALUE(p);
       if(p->exe[p->size_e-1].col > 1 || p->exe[p->size_e-1].row > 1){
@@ -1062,15 +1062,15 @@ int IF(Program *p)
    else{
       ON_ERROR("Expected a VARNAME and a INTEGER or two VARNAME after IF.\n");
    }
-   p->cw = p->cw + 1;
+   p->cw++;
    if(!COMPARE(p)){
       ON_ERROR("Expected a COMPARE before { in IF.\n");
    }
-   p->cw = p->cw + 1;
+   p->cw++;
    if(!strsame(p->wds[p->cw], "{")){
       ON_ERROR("Expected a { after COMPARE in IF.\n");
    }
-   p->cw = p->cw + 1;
+   p->cw++;
    if(!ELSEINSTRCLIST(p)){
       ON_ERROR("Expected a ELSEINSTRCLIST after { in IF.\n");
    }
@@ -1106,7 +1106,7 @@ int ELSEINSTRCLIST(Program *p)
    //<ELSEINSTRCLIST> ::=  <INSTRCLIST> | <INSTRCLIST> <ELSE>
 #ifndef LETSDOIT
    INSTRCLIST(p);
-   p->cw = p->cw + 1;
+   p->cw++;
    if(strsame(p->wds[p->cw], "ELSE")){
       ELSE(p);
    }
@@ -1167,11 +1167,11 @@ int ELSEINSTRCLIST(Program *p)
 void ELSE(Program *p)
 {
    //<ELSE> ::= ELSE "{" <INSTRCLIST>
-   p->cw = p->cw + 1;
+   p->cw++;
    if(!strsame(p->wds[p->cw], "{")){
       ON_ERROR("Expected a { after ELSE.\n");
    }
-   p->cw = p->cw + 1;
+   p->cw++;
    INSTRCLIST(p);
 }
 
